@@ -1,7 +1,7 @@
 local task_t = require("tasks")
 
 task_t():push(5, function()
-    print("5 seconds passed")
+  print("5 seconds passed")
 end):join()
 
 local t = task_t()
