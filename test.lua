@@ -33,38 +33,38 @@ end)()
 local TEST = 10
 
 for _ = 1, TEST do
-	collectgarbage("stop")
-	local TASK = 1000
-	local PUSH = 1000
+  collectgarbage("stop")
+  local TASK = 1000
+  local PUSH = 1000
 
-	local EXPECTED = TASK * PUSH
-	local COMPLETED = 0
+  local EXPECTED = TASK * PUSH
+  local COMPLETED = 0
 
-	local function foo()
-		COMPLETED = COMPLETED + 1
-	end
+  local function foo()
+    COMPLETED = COMPLETED + 1
+  end
 
-	print(("Test #%s [Task: %s | Push: %s | Expected: %s]"):format(_, TASK, PUSH, EXPECTED))
+  print(("Test #%s [Task: %s | Push: %s | Expected: %s]"):format(_, TASK, PUSH, EXPECTED))
 
-	_benchmark("constructor/push/join", function()
-		for _ = 1, TASK do
-			local timer = task_t()
-			for _ = 1, PUSH do
-				timer:push(-1, foo)
-			end
-			timer:join()
-		end
-	end)
+  _benchmark("constructor/push/join", function()
+    for _ = 1, TASK do
+      local timer = task_t()
+      for _ = 1, PUSH do
+        timer:push(-1, foo)
+      end
+      timer:join()
+    end
+  end)
 
-	_benchmark("consume", function()
-		for i = 0, 0 do
-			task_t.consume()
-		end
-	end)
+  _benchmark("consume", function()
+    for i = 0, 0 do
+      task_t.consume()
+    end
+  end)
 
-	collectgarbage("restart")
-	collectgarbage()
+  collectgarbage("restart")
+  collectgarbage()
 
-	assert(EXPECTED == COMPLETED, ("Failed\nExpected: %s\nCompleted: %s\n"):format(EXPECTED, COMPLETED))
-	print(("Passed [Completed: %s]\n"):format(COMPLETED))
+  assert(EXPECTED == COMPLETED, ("Failed\nExpected: %s\nCompleted: %s\n"):format(EXPECTED, COMPLETED))
+  print(("Passed [Completed: %s]\n"):format(COMPLETED))
 end
