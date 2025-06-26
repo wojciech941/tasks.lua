@@ -1,33 +1,33 @@
 local task_t = require("tasks.lua")
 
 local _benchmark = (function()
-	local ffi = require("ffi")
+  local ffi = require("ffi")
 
-	if jit.os == "Windows" then
-		ffi.cdef [[
-		  int QueryPerformanceCounter(long long*);
-		  int QueryPerformanceFrequency(long long*);
-		]]
+  if jit.os == "Windows" then
+    ffi.cdef [[
+      int QueryPerformanceCounter(long long*);
+      int QueryPerformanceFrequency(long long*);
+    ]]
 
-		local freq = ffi.new("long long[1]")
-		ffi.C.QueryPerformanceFrequency(freq)
+    local freq = ffi.new("long long[1]")
+    ffi.C.QueryPerformanceFrequency(freq)
 
-		return function(fmt, func, ...)
-			local t = ffi.new("long long[2][1]")
-			ffi.C.QueryPerformanceCounter(t[0])
-			func(...)
-			ffi.C.QueryPerformanceCounter(t[1])
-			local ns = (t[1][0] - t[0][0]) * 1e9 / freq[0]
-			print(("%s: %s ns (~%s ms)"):format(fmt, ns, ns / 10e5))
-		end
-	else
-		return function(fmt, func, ...)
-			local s = os.clock()
-			func(...)
-			local f = os.clock()
-			print(("%s: %s s"):format(ms, f - s))
-		end
-	end
+    return function(fmt, func, ...)
+      local t = ffi.new("long long[2][1]")
+      ffi.C.QueryPerformanceCounter(t[0])
+      func(...)
+      ffi.C.QueryPerformanceCounter(t[1])
+      local ns = (t[1][0] - t[0][0]) * 1e9 / freq[0]
+      print(("%s: %s ns (~%s ms)"):format(fmt, ns, ns / 10e5))
+    end
+  else
+    return function(fmt, func, ...)
+      local s = os.clock()
+      func(...)
+      local f = os.clock()
+      print(("%s: %s s"):format(ms, f - s))
+    end
+  end
 end)()
 
 local TEST = 10
